@@ -35,9 +35,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
         {/* Logo */}
         <a href="#hero" className="flex items-center gap-3">
-          <span className="font-serif text-2xl md:text-3xl font-medium text-foreground">
-            The <span className="text-primary">Aapa</span> Foods
-          </span>
+          <img src="/assets/logo.jpg" alt="Aapa Foods" className="h-8" />
         </a>
 
         {/* Desktop Navigation */}
