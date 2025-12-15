@@ -41,7 +41,7 @@ const Navbar = () => {
             alt="Aapa Foods Logo"
             className="h-44 w-80 md:h-44 md:w-80 object-contain top-5"
           />
-          <span className="font-serif text-2xl md:text-3xl font-medium text-foreground ml-[-180px] md:ml-[-180px]">
+          <span className="font-serif text-2xl md:text-3xl font-medium text-foreground ml-[-140px] md:ml-[-180px]">
             The <span className="text-primary">Aapa</span> Foods
           </span>
         </a>
