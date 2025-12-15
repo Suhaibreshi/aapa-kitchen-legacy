@@ -70,7 +70,9 @@ const CartDrawer = () => {
 
   // Calculate delivery charge based on district
   useEffect(() => {
-    if (formData.district && formData.district !== "Other") {
+    if (formData.district === "Anantnag") {
+      setDeliveryCharge(0);
+    } else if (formData.district && formData.district !== "Other") {
       const isJK = JK_DISTRICTS.includes(formData.district);
       setDeliveryCharge(isJK ? 60 : 100);
     } else if (formData.district === "Other" && formData.customState) {
@@ -553,9 +555,11 @@ const CartDrawer = () => {
                 <div className="flex justify-between text-gray-400">
                   <span>Delivery Charge:</span>
                   <span className="text-yellow-500">
-                    {deliveryCharge > 0
-                      ? `+₹${deliveryCharge}`
-                      : "Select district"}
+                    {!formData.district
+                      ? "Select district"
+                      : deliveryCharge === 0
+                      ? "Free"
+                      : `+₹${deliveryCharge}`}
                   </span>
                 </div>
                 <div className="flex justify-between font-serif text-xl text-white pt-2 border-t border-gray-700">

@@ -92,7 +92,7 @@ const Footer = () => {
               <li className="flex items-start gap-3 text-sm text-muted-foreground">
                 <Mail className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
                 <a
-                  href="mailto:hello@theaapafoods.com"
+                  href="mailto:Contact@theaapafoods.com"
                   className="hover:text-primary transition-colors"
                 >
                   Contact@theaapafoods.in
