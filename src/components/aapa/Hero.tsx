@@ -19,10 +19,10 @@ const Hero = () => {
           className="inline-flex items-center gap-2 mb-32 opacity-0 animate-fade-in"
           style={{ animationDelay: "0.2s" }}
         >
-          <span className="badge-premium">
+          {/* <span className="badge-premium">
             <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
             Pre-Launch 2025
-          </span>
+          </span> */}
         </div>
 
         {/* Main headline */}
@@ -71,7 +71,6 @@ const Hero = () => {
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground hover:text-primary transition-colors opacity-0 animate-fade-in"
         style={{ animationDelay: "1.4s" }}
       >
-        <span className="text-xs tracking-widest uppercase">Scroll</span>
         <ChevronDown className="w-5 h-5 animate-bounce" />
       </a>
     </section>

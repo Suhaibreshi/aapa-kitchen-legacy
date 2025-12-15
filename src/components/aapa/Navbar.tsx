@@ -39,9 +39,9 @@ const Navbar = () => {
           <img
             src={Logo}
             alt="Aapa Foods Logo"
-            className="h-10 w-10 md:h-44 md:w-80 object-contain top-5"
+            className="h-44 w-80 md:h-44 md:w-80 object-contain top-5"
           />
-          <span className="font-serif text-2xl md:text-3xl font-medium text-foreground ml-[-180px]">
+          <span className="font-serif text-2xl md:text-3xl font-medium text-foreground ml-[-180px] md:ml-[-180px]">
             The <span className="text-primary">Aapa</span> Foods
           </span>
         </a>
@@ -90,7 +90,7 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-background/98 backdrop-blur-lg border-b border-border animate-fade-in">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-background/60 backdrop-blur-lg border-b border-border animate-fade-in">
           <div className="px-6 py-6 flex flex-col gap-4">
             {navLinks.map((link) => (
               <a

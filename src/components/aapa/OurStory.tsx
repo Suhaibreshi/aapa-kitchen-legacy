@@ -98,7 +98,7 @@ const OurStory = () => {
             <div className="fade-up mt-10 flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-muted overflow-hidden">
                 <img
-                  src="/placeholder.svg"
+                  src="/saadath.jpeg"
                   alt="Saadath Mohi ud din"
                   className="w-full h-full object-cover"
                 />
