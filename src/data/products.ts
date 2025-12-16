@@ -21,7 +21,7 @@ export const products: Product[] = [
     name: 'Mixed Anchaar',
     price: 200,
     weight: '350g',
-     inStock: true,
+     inStock: false,
     description: 'A vibrant medley of seasonal vegetables preserved in time-honored Kashmiri traditions, each bite a celebration of heritage.',
     image: Mixed,
     ingredients: ['Carrots', 'Turnips', 'Cauliflower', 'Green Chillies', 'Mustard Oil', 'Traditional Spice Blend'],
