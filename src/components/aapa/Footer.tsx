@@ -68,7 +68,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="https://instagram.com/theaapapodcast"
+                  href="https://www.instagram.com/saadath.auyk?igsh=MXh3ZWF6cmMwcDUxcg=="
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary transition-colors text-sm"

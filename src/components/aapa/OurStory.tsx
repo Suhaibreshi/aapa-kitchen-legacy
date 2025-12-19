@@ -104,9 +104,12 @@ const OurStory = () => {
                 />
               </div>
               <div>
-                <p className="font-medium text-foreground">
+                <a
+                  href="https://www.instagram.com/saadath.auyk?igsh=MXh3ZWF6cmMwcDUxcg=="
+                  className="font-medium text-foreground"
+                >
                   Saadath Mohi ud din
-                </p>
+                </a>
                 <p className="text-sm text-muted-foreground">
                   Founder, The Aapa Foods
                 </p>
