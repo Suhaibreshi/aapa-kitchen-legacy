@@ -30,9 +30,9 @@ const Hero = () => {
           className="text-display text-foreground mb-6 opacity-0 animate-fade-in"
           style={{ animationDelay: "0.4s" }}
         >
-          Pure, Kashmiri
+          Pure Kashmiri,
           <br />
-          <span className="text-primary">Truly Homemade.</span>
+          <span className="text-primary">Truly Homemade</span>
         </h1>
 
         {/* Subheadline */}

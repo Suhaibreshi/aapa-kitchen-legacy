@@ -71,12 +71,12 @@ const CartDrawer = () => {
   // Calculate delivery charge based on district
   useEffect(() => {
     if (formData.district === "Anantnag") {
-      setDeliveryCharge(0);
+      setDeliveryCharge(40);
     } else if (formData.district && formData.district !== "Other") {
       const isJK = JK_DISTRICTS.includes(formData.district);
-      setDeliveryCharge(isJK ? 60 : 100);
+      setDeliveryCharge(isJK ? 90 : 130);
     } else if (formData.district === "Other" && formData.customState) {
-      setDeliveryCharge(100);
+      setDeliveryCharge(130);
     } else {
       setDeliveryCharge(0);
     }
