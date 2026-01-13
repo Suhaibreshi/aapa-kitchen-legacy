@@ -21,7 +21,7 @@ export const products: Product[] = [
     name: 'Haakh-e-Anchaar',
     price: 200,
     weight: '350g',
-     inStock: false,
+     inStock: true,
     description: 'A unique Kashmiri delicacy made from traditional collard greens, slow-cooked with aromatic spices passed down through generations.',
     image: Haakh,
     ingredients: ['Haakh (Collard Greens)', 'Mustard Oil', 'Kashmiri Red Chillies', 'Fennel Seeds', 'Asafoetida', 'Rock Salt'],
