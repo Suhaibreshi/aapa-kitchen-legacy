@@ -1,15 +1,36 @@
 import { useState, useEffect, useRef } from "react";
 import { Plus, Leaf, Clock, Heart } from "lucide-react";
-import { products, comboPrice, comboSavings } from "@/data/products";
+import { getProductsWithStock, comboPrice, comboSavings, products as fallbackProducts } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import combo from "../../../public/combo.jpeg";
 
 const Products = () => {
   const { addToCart } = useCart();
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const [products, setProducts] = useState(fallbackProducts);
+  const [loading, setLoading] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    // Fetch stock data from Google Sheets on component mount
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        console.log('Loading products with stock data...');
+        const productsWithStock = await getProductsWithStock();
+        console.log('Products loaded:', productsWithStock);
+        setProducts(productsWithStock);
+      } catch (error) {
+        console.error('Failed to load products:', error);
+        console.log('Using fallback products');
+        setProducts(fallbackProducts);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadProducts();
+    
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -185,7 +206,7 @@ const Products = () => {
 
               <div className="flex items-center gap-4 mb-8">
                 <span className="text-muted-foreground line-through text-lg">
-                  ₹{products[0].price + products[1].price}
+                  ₹{products.reduce((sum, product) => sum + product.price, 0)}
                 </span>
                 <span className="font-serif text-4xl text-primary">
                   ₹{comboPrice}

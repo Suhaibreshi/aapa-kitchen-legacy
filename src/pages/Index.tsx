@@ -1,4 +1,6 @@
 import { Helmet } from "react-helmet-async";
+import { useState, useEffect } from "react";
+import RamadanAnnouncement from "@/components/aapa/RamadanAnnouncement";
 import Navbar from "@/components/aapa/Navbar";
 import Hero from "@/components/aapa/Hero";
 import OurStory from "@/components/aapa/OurStory";
@@ -10,6 +12,14 @@ import Footer from "@/components/aapa/Footer";
 import CartDrawer from "@/components/aapa/CartDrawer";
 
 const Index = () => {
+  const [announcementVisible, setAnnouncementVisible] = useState(true);
+
+  useEffect(() => {
+    // Check if announcement is hidden
+    const hidden = localStorage.getItem('ramadan-announcement-hidden');
+    setAnnouncementVisible(!hidden);
+  }, []);
+
   return (
     <>
       <Helmet>
@@ -35,15 +45,18 @@ const Index = () => {
       </Helmet>
 
       <main className="min-h-screen bg-background">
-        <Navbar />
-        <Hero />
-        <OurStory />
-        <Products />
-        <PreLaunchNote />
-        <Testimonials />
-        <InstagramFeed />
-        <Footer />
-        <CartDrawer />
+        <RamadanAnnouncement />
+        <div className={announcementVisible ? "pt-12" : ""}>
+          <Navbar />
+          <Hero />
+          <OurStory />
+          <Products />
+          <PreLaunchNote />
+          <Testimonials />
+          <InstagramFeed />
+          <Footer />
+          <CartDrawer />
+        </div>
       </main>
     </>
   );
