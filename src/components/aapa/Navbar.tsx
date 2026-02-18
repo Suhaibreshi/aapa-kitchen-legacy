@@ -8,6 +8,7 @@ const Navbar = () => {
   const { totalItems, setIsOpen } = useCart();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [announcementVisible, setAnnouncementVisible] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,6 +16,12 @@ const Navbar = () => {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    // Check if announcement is hidden
+    const hidden = localStorage.getItem('ramadan-announcement-hidden');
+    setAnnouncementVisible(!hidden);
   }, []);
 
   const navLinks = [
@@ -27,10 +34,11 @@ const Navbar = () => {
   return (
     <nav
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+        "fixed left-0 right-0 z-50 transition-all duration-500",
         isScrolled
           ? "bg-background/95 backdrop-blur-md border-b border-border/50 h-24"
-          : "bg-transparent h-24"
+          : "bg-transparent h-24",
+        announcementVisible ? "top-12" : "top-0"
       )}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between h-full">

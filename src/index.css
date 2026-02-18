@@ -75,4 +75,19 @@
   .fade-up.visible { @apply opacity-100 translate-y-0; }
   .divider-ornate { @apply w-24 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent mx-auto; }
   .badge-premium { @apply inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium tracking-widest uppercase bg-primary/10 text-primary border border-primary/20; }
+  .ramadan-marquee { 
+    animation: marquee 20s linear infinite;
+  }
+  .ramadan-marquee:hover {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-33.333%);
+  }
 }
