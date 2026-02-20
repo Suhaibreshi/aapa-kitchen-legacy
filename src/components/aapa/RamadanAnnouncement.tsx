@@ -1,22 +1,11 @@
-import { useState, useEffect } from 'react';
 import { Star, Moon, Gift } from 'lucide-react';
 
-const RamadanAnnouncement = () => {
-  const [isVisible, setIsVisible] = useState(true);
+interface RamadanAnnouncementProps {
+  isVisible: boolean;
+  onClose: () => void;
+}
 
-  useEffect(() => {
-    // Show/hide announcement based on user preference
-    const hidden = localStorage.getItem('ramadan-announcement-hidden');
-    if (hidden) {
-      setIsVisible(false);
-    }
-  }, []);
-
-  const handleClose = () => {
-    setIsVisible(false);
-    localStorage.setItem('ramadan-announcement-hidden', 'true');
-  };
-
+const RamadanAnnouncement = ({ isVisible, onClose }: RamadanAnnouncementProps) => {
   if (!isVisible) return null;
 
   return (
@@ -31,7 +20,7 @@ const RamadanAnnouncement = () => {
 
       {/* Close button */}
       <button
-        onClick={handleClose}
+        onClick={onClose}
         className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white/70 hover:text-white transition-colors"
         aria-label="Close announcement"
       >

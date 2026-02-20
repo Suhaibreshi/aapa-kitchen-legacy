@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import StoryPopup from "./StoryPopup";
 import Heritage from "../../../public/Heritage.jpeg";
+import { products } from "@/data/products";
 
 const OurStory = () => {
   const { addToCart, updateQuantity, setIsOpen, items } = useCart();
@@ -59,25 +60,19 @@ const OurStory = () => {
   const handleClaimOffer = () => {
     console.log('Claim offer clicked!');
     
-    // Add 20% extra quantity to existing items in cart
-    if (items.length > 0) {
-      items.forEach(item => {
-        const extraQuantity = Math.round(item.quantity * 0.2); // 20% extra
-        const newQuantity = item.quantity + extraQuantity;
-        
-        // Update the item with extra quantity
-        updateQuantity(item.product.id, newQuantity);
-      });
-    }
-    
-    setShowPopup(false);
+    // FIRST: Store coupon BEFORE opening cart
+    localStorage.setItem('auto-apply-coupon', 'RAMADAN20');
     localStorage.setItem('ramadan-popup-seen', 'true');
     localStorage.setItem('ramadan-extra-applied', 'true');
     
-    // Scroll to Products section (Aanchar buy section)
-    const productsSection = document.getElementById('products');
-    if (productsSection) {
-      productsSection.scrollIntoView({ behavior: 'smooth' });
+    setShowPopup(false);
+    
+    // THEN: Find the Mixed Anchaar product and add to cart
+    const mixedAnchaar = products.find(p => p.id === 'mixed-anchaar');
+    
+    if (mixedAnchaar) {
+      // Add 2 Mixed Anchaars to cart (this opens the cart drawer)
+      addToCart(mixedAnchaar, 2);
     }
   };
 
