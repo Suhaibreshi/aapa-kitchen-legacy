@@ -4,11 +4,14 @@ import { useCart } from "@/contexts/CartContext";
 import { cn } from "@/lib/utils";
 import Logo from "../../../public/Logo.png";
 
-const Navbar = () => {
+interface NavbarProps {
+  announcementVisible?: boolean;
+}
+
+const Navbar = ({ announcementVisible = false }: NavbarProps) => {
   const { totalItems, setIsOpen } = useCart();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [announcementVisible, setAnnouncementVisible] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,12 +19,6 @@ const Navbar = () => {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    // Check if announcement is hidden
-    const hidden = localStorage.getItem('ramadan-announcement-hidden');
-    setAnnouncementVisible(!hidden);
   }, []);
 
   const navLinks = [

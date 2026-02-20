@@ -1,36 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { Plus, Leaf, Clock, Heart } from "lucide-react";
-import { getProductsWithStock, comboPrice, comboSavings, products as fallbackProducts } from "@/data/products";
+import { products, comboPrice, comboSavings } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import combo from "../../../public/combo.jpeg";
 
 const Products = () => {
   const { addToCart } = useCart();
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
-  const [products, setProducts] = useState(fallbackProducts);
-  const [loading, setLoading] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  
+  const allInStock = products.every(p => p.inStock);
 
   useEffect(() => {
-    // Fetch stock data from Google Sheets on component mount
-    const loadProducts = async () => {
-      try {
-        setLoading(true);
-        console.log('Loading products with stock data...');
-        const productsWithStock = await getProductsWithStock();
-        console.log('Products loaded:', productsWithStock);
-        setProducts(productsWithStock);
-      } catch (error) {
-        console.error('Failed to load products:', error);
-        console.log('Using fallback products');
-        setProducts(fallbackProducts);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    loadProducts();
-    
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -92,14 +73,15 @@ const Products = () => {
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${!product.inStock ? 'opacity-50' : ''}`}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent opacity-60" />
 
-                {/* Badges */}
-                {/* <div className="absolute top-4 left-4 flex flex-col gap-2">
-                  <span className="badge-premium text-[10px]">Pre-Launch</span>
-                </div> */}
+                {!product.inStock && (
+                  <div className="absolute top-4 left-4 bg-red-600 text-white text-xs px-3 py-1.5 rounded-full font-semibold">
+                    Out of Stock
+                  </div>
+                )}
               </div>
 
               {/* Product info */}
@@ -165,10 +147,11 @@ const Products = () => {
                 {/* Add to cart */}
                 <button
                   onClick={() => addToCart(product)}
-                  className="w-full btn-primary flex items-center justify-center gap-2"
+                  disabled={!product.inStock}
+                  className={`w-full flex items-center justify-center gap-2 ${product.inStock ? 'btn-primary' : 'bg-gray-600 text-gray-400 cursor-not-allowed py-3 px-6 rounded-lg'}`}
                 >
                   <Plus className="w-4 h-4" />
-                  Add to Cart
+                  {product.inStock ? 'Add to Cart' : 'Out of Stock'}
                 </button>
               </div>
             </div>
@@ -184,10 +167,15 @@ const Products = () => {
             {/* LEFT: Image */}
             <div className="relative">
               <img
-                src={combo} // change path
+                src={combo}
                 alt="Complete Experience Combo"
-                className="w-full h-full object-cover"
+                className={`w-full h-full object-cover ${!allInStock ? 'opacity-50' : ''}`}
               />
+              {!allInStock && (
+                <div className="absolute top-4 left-4 bg-red-600 text-white text-xs px-3 py-1.5 rounded-full font-semibold">
+                  Out of Stock
+                </div>
+              )}
             </div>
 
             {/* RIGHT: Content */}
@@ -215,10 +203,11 @@ const Products = () => {
 
               <button
                 onClick={handleAddCombo}
-                className="btn-primary inline-flex items-center gap-2 w-fit"
+                disabled={!allInStock}
+                className={`inline-flex items-center gap-2 w-fit ${allInStock ? 'btn-primary' : 'bg-gray-600 text-gray-400 cursor-not-allowed py-3 px-6 rounded-lg'}`}
               >
                 <Plus className="w-4 h-4" />
-                Add Combo to Cart
+                {allInStock ? 'Add Combo to Cart' : 'Out of Stock'}
               </button>
             </div>
           </div>

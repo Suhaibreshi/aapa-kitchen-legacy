@@ -44,6 +44,7 @@ const CartDrawer = () => {
     subtotal,
     clearCart,
     hasOutOfStockItems,
+    totalItems,
   } = useCart();
 
   const [step, setStep] = useState<"cart" | "delivery" | "policy">("cart");
@@ -69,6 +70,31 @@ const CartDrawer = () => {
     phone: "",
     coupon: "",
   });
+
+  // Auto-apply coupon and initial step from popup claim
+  useEffect(() => {
+    if (isOpen) {
+      const autoCoupon = localStorage.getItem('auto-apply-coupon');
+      const initialStep = localStorage.getItem('cart-initial-step') as 'cart' | 'delivery' | 'policy' | null;
+      
+      if (autoCoupon && !formData.coupon) {
+        setFormData(prev => ({ ...prev, coupon: autoCoupon }));
+        localStorage.removeItem('auto-apply-coupon');
+      }
+      
+      if (initialStep && ['cart', 'delivery', 'policy'].includes(initialStep)) {
+        setStep(initialStep);
+        localStorage.removeItem('cart-initial-step');
+      }
+    }
+  }, [isOpen]);
+
+  // Reset step when cart closes
+  useEffect(() => {
+    if (!isOpen) {
+      setStep('cart');
+    }
+  }, [isOpen]);
 
   // Calculate delivery charge based on district
   useEffect(() => {
@@ -131,9 +157,6 @@ const CartDrawer = () => {
   };
 
   const handleProceedToPolicy = () => {
-    console.log('🔥 handleProceedToPolicy CLICKED!');
-    console.log('Current formData:', formData);
-    
     const newErrors = {
       fullName: "",
       district: "",
@@ -144,31 +167,51 @@ const CartDrawer = () => {
       coupon: "",
     };
 
-    // Optional validation - just log warnings, don't block
+    let hasErrors = false;
+
     if (!formData.fullName.trim()) {
-      console.log('⚠️ Warning: Full name is empty');
+      newErrors.fullName = "Full name is required";
+      hasErrors = true;
     }
 
     if (!formData.district) {
-      console.log('⚠️ Warning: District is empty');
+      newErrors.district = "Please select a district";
+      hasErrors = true;
+    }
+
+    if (formData.district === "Other" && !formData.customState.trim()) {
+      newErrors.customState = "Please enter your state/city";
+      hasErrors = true;
     }
 
     if (!formData.address.trim()) {
-      console.log('⚠️ Warning: Address is empty');
+      newErrors.address = "Delivery address is required";
+      hasErrors = true;
     }
 
-    if (!formData.pincode) {
-      console.log('⚠️ Warning: Pincode is empty');
+    if (!formData.pincode.trim()) {
+      newErrors.pincode = "Pincode is required";
+      hasErrors = true;
+    } else if (formData.pincode.length !== 6 || !/^\d{6}$/.test(formData.pincode)) {
+      newErrors.pincode = "Enter a valid 6-digit pincode";
+      hasErrors = true;
     }
 
-    if (!formData.phone) {
-      console.log('⚠️ Warning: Phone is empty');
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+      hasErrors = true;
+    } else if (formData.phone.length !== 10 || !/^\d{10}$/.test(formData.phone)) {
+      newErrors.phone = "Enter a valid 10-digit phone number";
+      hasErrors = true;
     }
 
-    console.log('Proceeding to WhatsApp with current data...');
-    
-    // Always proceed to WhatsApp, even with empty fields
-    handleFinalSubmit();
+    setErrors(newErrors);
+
+    if (hasErrors) {
+      return;
+    }
+
+    setStep("policy");
   };
 
   const generateWhatsAppMessage = () => {
@@ -643,7 +686,12 @@ const CartDrawer = () => {
 
               {/* Order Summary with Delivery Charge */}
               <div className="border-t border-b border-gray-700 py-4 space-y-2 text-sm bg-[#232938] rounded-lg p-4 mt-6">
-                <h4 className="font-semibold text-white mb-3">Order Summary</h4>
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="font-semibold text-white">Order Summary</h4>
+                  <span className="text-sm text-yellow-500 font-medium">
+                    {totalItems} item{totalItems !== 1 ? 's' : ''}
+                  </span>
+                </div>
                 <div className="flex justify-between text-gray-400">
                   <span>Subtotal:</span>
                   <span className="text-white">₹{subtotal}</span>
@@ -669,7 +717,7 @@ const CartDrawer = () => {
                 onClick={handleProceedToPolicy}
                 className="w-full bg-yellow-500 text-gray-900 py-4 rounded-full font-semibold hover:bg-yellow-400 transition-colors mt-4"
               >
-                Continue to Payment Policy
+                Place Order
               </button>
 
               <button
@@ -724,9 +772,14 @@ const CartDrawer = () => {
 
               {/* Final Order Summary */}
               <div className="bg-[#232938] rounded-xl p-4 space-y-3">
-                <h4 className="font-serif text-lg text-white">
-                  Final Order Summary
-                </h4>
+                <div className="flex justify-between items-center">
+                  <h4 className="font-serif text-lg text-white">
+                    Final Order Summary
+                  </h4>
+                  <span className="text-sm text-yellow-500 font-medium">
+                    {totalItems} item{totalItems !== 1 ? 's' : ''}
+                  </span>
+                </div>
 
                 <div className="space-y-1 text-sm">
                   {items.map((item) => (
