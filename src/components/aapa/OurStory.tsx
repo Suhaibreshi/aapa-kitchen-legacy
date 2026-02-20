@@ -59,26 +59,8 @@ const OurStory = () => {
   const handleClaimOffer = () => {
     console.log('Claim offer clicked!');
     
-    // Add 350gm + 20% extra to cart when claimed
-    // items is already available from component-level useCart
-    
-    if (items.length === 0) {
-      // If cart is empty, add a free "Ramadan Blessing" item
-      const ramadanBlessing = {
-        id: 'ramadan-blessing',
-        name: 'Ramadan Blessing',
-        price: 0,
-        weight: 'Gift',
-        description: '20% extra goodness as Ramadan blessing',
-        image: '/placeholder.svg',
-        ingredients: ['Blessings', 'Love', 'Tradition'],
-        tastingNotes: 'A taste of Ramadan generosity',
-        inStock: true
-      };
-      
-      addToCart(ramadanBlessing, 1);
-    } else {
-      // Add 350gm + 20% extra quantity to existing items
+    // Add 20% extra quantity to existing items in cart
+    if (items.length > 0) {
       items.forEach(item => {
         const extraQuantity = Math.round(item.quantity * 0.2); // 20% extra
         const newQuantity = item.quantity + extraQuantity;

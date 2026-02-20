@@ -38,7 +38,7 @@ const StoryPopup = ({ isVisible, onClose, onClaimOffer }: StoryPopupProps) => {
           <div className="space-y-2">
             <p className="text-primary font-bold text-xl">20% EXTRA</p>
             <p className="text-muted-foreground">
-              Claim your Ramadan blessing with extra goodness in every jar!
+              Get 20% extra quantity on all your favorite anchaars!
             </p>
           </div>
 
