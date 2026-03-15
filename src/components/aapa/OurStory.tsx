@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useCart } from "@/contexts/CartContext";
 import StoryPopup from "./StoryPopup";
 import Heritage from "../../../public/Heritage.jpeg";
 
 const OurStory = () => {
-  const { addToCart, updateQuantity, setIsOpen, items } = useCart();
   const [showPopup, setShowPopup] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -18,15 +16,15 @@ const OurStory = () => {
   }, []);
 
   useEffect(() => {
-    // Check if popup should be shown immediately (for testing)
-    const hasSeenPopup = localStorage.getItem('ramadan-popup-seen');
+    // Check if popup should be shown immediately
+    const hasSeenPopup = localStorage.getItem('special-popup-seen');
     console.log('Our Story section visible, hasSeenPopup:', hasSeenPopup);
     
     // Show popup immediately if not seen before, or if testing
     if (!hasSeenPopup) {
       console.log('Showing popup immediately (not waiting for intersection)');
       setShowPopup(true);
-      localStorage.setItem('ramadan-popup-seen', 'true');
+      localStorage.setItem('special-popup-seen', 'true');
     }
     
     // Set up Intersection Observer for animations
@@ -59,20 +57,8 @@ const OurStory = () => {
   const handleClaimOffer = () => {
     console.log('Claim offer clicked!');
     
-    // Add 20% extra quantity to existing items in cart
-    if (items.length > 0) {
-      items.forEach(item => {
-        const extraQuantity = Math.round(item.quantity * 0.2); // 20% extra
-        const newQuantity = item.quantity + extraQuantity;
-        
-        // Update the item with extra quantity
-        updateQuantity(item.product.id, newQuantity);
-      });
-    }
-    
     setShowPopup(false);
-    localStorage.setItem('ramadan-popup-seen', 'true');
-    localStorage.setItem('ramadan-extra-applied', 'true');
+    localStorage.setItem('special-popup-seen', 'true');
     
     // Scroll to Products section (Aanchar buy section)
     const productsSection = document.getElementById('products');
@@ -84,7 +70,7 @@ const OurStory = () => {
   const handleClosePopup = () => {
     console.log('Close popup clicked!');
     setShowPopup(false);
-    localStorage.setItem('ramadan-popup-seen', 'true');
+    localStorage.setItem('special-popup-seen', 'true');
   };
 
   // Debug: Log when showPopup changes
