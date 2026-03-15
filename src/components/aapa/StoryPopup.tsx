@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Gift, ShoppingBag } from 'lucide-react';
+import { X, Tag, ShoppingBag } from 'lucide-react';
 
 interface StoryPopupProps {
   isVisible: boolean;
@@ -26,26 +26,26 @@ const StoryPopup = ({ isVisible, onClose, onClaimOffer }: StoryPopupProps) => {
         <div className="text-center space-y-4">
           {/* Icon */}
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-            <Gift className="w-8 h-8 text-primary" />
+            <Tag className="w-8 h-8 text-primary" />
           </div>
 
           {/* Title */}
           <h3 className="text-2xl font-serif font-medium text-foreground">
-            🌙 Ramadan Special!
+            Special Offer!
           </h3>
 
           {/* Offer */}
           <div className="space-y-2">
-            <p className="text-primary font-bold text-xl">20% EXTRA</p>
+            <p className="text-primary font-bold text-xl">43% OFF</p>
             <p className="text-muted-foreground">
-              Get 20% extra quantity on all your favorite anchaars!
+              Use coupon code to get amazing discount on all anchaars!
             </p>
           </div>
 
           {/* Coupon code */}
           <div className="bg-emerald-900/20 border border-emerald-600/30 rounded-lg p-3">
             <p className="text-sm text-emerald-300 mb-1">Use code:</p>
-            <p className="font-mono font-bold text-emerald-100 text-lg">RAMADAN20</p>
+            <p className="font-mono font-bold text-emerald-100 text-lg">AAPA43</p>
           </div>
 
           {/* CTA Button */}
@@ -54,7 +54,7 @@ const StoryPopup = ({ isVisible, onClose, onClaimOffer }: StoryPopupProps) => {
             className="w-full btn-primary flex items-center justify-center gap-2"
           >
             <ShoppingBag className="w-4 h-4" />
-            Claim 20% Extra
+            Shop Now
           </button>
 
           {/* Subtext */}

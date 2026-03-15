@@ -112,34 +112,46 @@ const CartDrawer = () => {
   }, [formData.district, formData.customState]);
 
   const [couponApplied, setCouponApplied] = useState(false);
+  const [validCoupons, setValidCoupons] = useState<Record<string, number>>({});
+
+  // Load valid coupons from CSV
+  useEffect(() => {
+    const loadCoupons = async () => {
+      try {
+        const response = await fetch('/coupons.csv');
+        const csvText = await response.text();
+        const lines = csvText.trim().split('\n');
+        const coupons: Record<string, number> = {};
+        
+        lines.slice(1).forEach(line => {
+          const [code, discount] = line.split(',');
+          if (code && discount) {
+            coupons[code.trim()] = parseInt(discount.trim());
+          }
+        });
+        
+        setValidCoupons(coupons);
+      } catch (error) {
+        console.error('Failed to load coupons:', error);
+      }
+    };
+    
+    loadCoupons();
+  }, []);
 
   // Calculate discount based on coupon
   useEffect(() => {
-    if (formData.coupon === "SAVE10") {
-      setDiscount(Math.round(subtotal * 0.1));
-      setCouponApplied(false);
-    } else if (formData.coupon === "SAVE20") {
-      setDiscount(Math.round(subtotal * 0.2));
-      setCouponApplied(false);
-    } else if (formData.coupon === "RAMADAN20" && !couponApplied) {
-      // Add 20% extra (70gm) to 350gm items
-      items.forEach(item => {
-        if (item.product.weight === '350gm') {
-          // Calculate 20% extra quantity
-          const extraQuantity = Math.round(item.quantity * 0.2);
-          const newQuantity = item.quantity + extraQuantity;
-          
-          // Update quantity
-          updateQuantity(item.product.id, newQuantity);
-        }
-      });
-      setDiscount(0);
+    const couponCode = formData.coupon.toUpperCase();
+    const discountPercent = validCoupons[couponCode];
+    
+    if (discountPercent && !couponApplied) {
+      setDiscount(Math.round(subtotal * (discountPercent / 100)));
       setCouponApplied(true);
-    } else if (formData.coupon !== "RAMADAN20") {
+    } else if (!discountPercent) {
       setDiscount(0);
       setCouponApplied(false);
     }
-  }, [formData.coupon, subtotal, items, updateQuantity, couponApplied]);
+  }, [formData.coupon, subtotal, validCoupons, couponApplied]);
 
   const finalTotal = subtotal - discount + deliveryCharge;
 
@@ -364,9 +376,7 @@ const CartDrawer = () => {
                               {item.product.name}
                             </h4>
                             <p className="text-sm text-gray-400 mt-1">
-                              {item.product.weight === '350gm' && couponApplied && formData.coupon === 'RAMADAN20' 
-                                ? '420gm (350gm + 70gm extra)' 
-                                : item.product.weight}
+                              {item.product.weight}
                             </p>
                           </div>
                           <button
@@ -434,7 +444,7 @@ const CartDrawer = () => {
                       <input
                         type="text"
                         name="coupon"
-                        placeholder="RAMADAN20"
+                        placeholder="Enter coupon code"
                         value={formData.coupon}
                         onChange={handleInputChange}
                         className={`w-full px-4 py-3 bg-[#1a1f2e] border ${
@@ -445,7 +455,7 @@ const CartDrawer = () => {
                       />
                       <button
                         onClick={() => {
-                          setFormData(prev => ({ ...prev, coupon: 'RAMADAN20' }));
+                          setFormData(prev => ({ ...prev, coupon: 'AAPA43' }));
                           setErrors(prev => ({ ...prev, coupon: '' }));
                         }}
                         className="px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
@@ -453,11 +463,11 @@ const CartDrawer = () => {
                         Apply
                       </button>
                     </div>
-                    {formData.coupon === 'RAMADAN20' && couponApplied && (
+                    {couponApplied && (
                       <div className="text-emerald-400 text-sm mt-2 space-y-1">
-                        <div>✓ RAMADAN20 applied</div>
+                        <div>✓ {formData.coupon.toUpperCase()} applied</div>
                         <div className="text-xs text-emerald-300">
-                          20% extra added to 350gm items (now 420gm)
+                          {validCoupons[formData.coupon.toUpperCase()]}% discount applied
                         </div>
                       </div>
                     )}
