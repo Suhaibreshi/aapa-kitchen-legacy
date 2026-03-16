@@ -1,15 +1,10 @@
 import { Product } from '@/contexts/CartContext';
-import { fetchStockData, isItemInStock } from '@/services/localStock';
 
-// Public assets should be referenced from the root in Vite.
-// Files in `public/` are served at `/` at runtime. Use absolute paths
-// and ensure filename casing matches the filesystem.
 const Haakh = '/Haakh.jpeg';
 const Mixed = '/mixed.jpeg';
 
-// Base products data (without stock info)
-const baseProducts: Product[] = [
-   {
+export const products: Product[] = [
+  {
     id: 'mixed-anchaar',
     name: 'Mixed Anchaar',
     price: 350,
@@ -24,8 +19,8 @@ const baseProducts: Product[] = [
     id: 'haakh-anchaar',
     name: 'Haakh-e-Anchaar',
     price: 350,
-    weight: '400g',
-    inStock: false, // This will be updated dynamically
+    weight: '350g',
+    inStock: false,
     description: 'A unique Kashmiri delicacy made from traditional collard greens, slow-cooked with aromatic spices passed down through generations.',
     image: Haakh,
     ingredients: ['Haakh (Collard Greens)', 'Mustard Oil', 'Kashmiri Red Chillies', 'Fennel Seeds', 'Asafoetida', 'Rock Salt'],
@@ -33,27 +28,5 @@ const baseProducts: Product[] = [
   }
 ];
 
-// Function to get products with updated stock based on Google Sheets data
-export async function getProductsWithStock(): Promise<Product[]> {
-  try {
-    const stockData = await fetchStockData();
-    console.log('Updating products with stock data:', stockData);
-    
-    const updatedProducts = baseProducts.map(product => ({
-      ...product,
-      inStock: isItemInStock(product.id, stockData)
-    }));
-    
-    console.log('Updated products with stock:', updatedProducts);
-    return updatedProducts;
-  } catch (error) {
-    console.error('Failed to update product stock:', error);
-    return baseProducts;
-  }
-}
-
-// Export the base products for fallback
-export { baseProducts as products };
-
 export const comboPrice = 380;
-export const comboSavings = (baseProducts[0].price + baseProducts[1].price) - comboPrice;
+export const comboSavings = (products[0].price + products[1].price) - comboPrice;
