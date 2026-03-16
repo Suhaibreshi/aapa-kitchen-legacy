@@ -240,15 +240,42 @@ const CartDrawer = () => {
     const displayDistrict =
       formData.district === "Other" ? formData.customState : formData.district;
 
-    const message = `🛒 *NEW ORDER - AAPA FOODS*\n\n*CUSTOMER DETAILS:*\n━━━━━━━━━━━━━━━━\n👤 Name: ${
+    const message = `🛒 *NEW ORDER - AAPA FOODS*
+
+*CUSTOMER DETAILS:*
+━━━━━━━━━━━━━━━━
+👤 Name: ${
       formData.fullName
-    }\n📍 District: ${displayDistrict}\n🏠 Address: ${
+    }
+📍 District: ${displayDistrict}
+🏠 Address: ${
       formData.address
-    }\n📮 Pincode: ${formData.pincode}\n📞 Phone: ${
+    }
+📮 Pincode: ${formData.pincode}
+📞 Phone: ${
       formData.phone
-    }\n\n*ORDER DETAILS:*\n━━━━━━━━━━━━━━━━\n${orderDetails} (${
+    }
+
+*ORDER DETAILS:*
+━━━━━━━━━━━━━━━━
+${orderDetails} (${
       JK_DISTRICTS.includes(formData.district) ? "J&K" : "Outside J&K"
-    })\n━━━━━━━━━━━━━━━━\n💰 *TOTAL: ₹${finalTotal}*\n\n✅ Customer agrees: Pre-paid orders only (No COD)\n\n_Please share payment details (UPI/QR/Bank) to complete this order._`;
+    })
+
+*PRICE BREAKDOWN:*
+━━━━━━━━━━━━━━━━
+Subtotal: ₹${subtotal}${
+      discount > 0 ? `\nDiscount (${validCoupons[formData.coupon.toUpperCase()]}%): -₹${discount}` : ''
+    }${
+      discount > 0 ? `\nAfter Discount: ₹${subtotal - discount}` : ''
+    }
+Delivery: +₹${deliveryCharge}
+━━━━━━━━━━━━━━━━
+💰 *FINAL TOTAL: ₹${finalTotal}*
+
+✅ Customer agrees: Pre-paid orders only (No COD)
+
+_Please share payment details (UPI/QR/Bank) to complete this order._`;
 
     return `https://wa.me/919541526345?text=${encodeURIComponent(message)}`;
   };
