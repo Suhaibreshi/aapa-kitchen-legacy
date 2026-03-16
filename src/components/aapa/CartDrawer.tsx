@@ -182,37 +182,32 @@ const CartDrawer = () => {
 
     let hasErrors = false;
 
+    // Optional validation - show warnings but don't block
     if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required";
-      hasErrors = true;
+      console.log('⚠️ Warning: Full name is empty');
     }
 
     if (!formData.district) {
-      newErrors.district = "Please select a district";
-      hasErrors = true;
+      console.log('⚠️ Warning: District is empty');
     }
 
     if (formData.district === "Other" && !formData.customState.trim()) {
-      newErrors.customState = "Please enter your state/city";
-      hasErrors = true;
+      console.log('⚠️ Warning: Custom state is empty');
     }
 
     if (!formData.address.trim()) {
-      newErrors.address = "Delivery address is required";
-      hasErrors = true;
+      console.log('⚠️ Warning: Address is empty');
     }
 
     if (!formData.pincode.trim()) {
-      newErrors.pincode = "Pincode is required";
-      hasErrors = true;
+      console.log('⚠️ Warning: Pincode is empty');
     } else if (formData.pincode.length !== 6 || !/^\d{6}$/.test(formData.pincode)) {
       newErrors.pincode = "Enter a valid 6-digit pincode";
       hasErrors = true;
     }
 
     if (!formData.phone.trim()) {
-      newErrors.phone = "Phone number is required";
-      hasErrors = true;
+      console.log('⚠️ Warning: Phone is empty');
     } else if (formData.phone.length !== 10 || !/^\d{10}$/.test(formData.phone)) {
       newErrors.phone = "Enter a valid 10-digit phone number";
       hasErrors = true;
@@ -220,6 +215,7 @@ const CartDrawer = () => {
 
     setErrors(newErrors);
 
+    // Only block if phone/pincode format is invalid, otherwise proceed
     if (hasErrors) {
       return;
     }
