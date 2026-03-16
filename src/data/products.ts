@@ -12,8 +12,8 @@ const baseProducts: Product[] = [
    {
     id: 'mixed-anchaar',
     name: 'Mixed Anchaar',
-    price: 200,
-    weight: '350g',
+    price: 350,
+    weight: '400g',
     inStock: true, // This will be updated dynamically
     description: 'A vibrant medley of seasonal vegetables preserved in time-honored Kashmiri traditions, each bite a celebration of heritage.',
     image: Mixed,
@@ -23,9 +23,9 @@ const baseProducts: Product[] = [
   {
     id: 'haakh-anchaar',
     name: 'Haakh-e-Anchaar',
-    price: 200,
-    weight: '350g',
-    inStock: true, // This will be updated dynamically
+    price: 350,
+    weight: '400g',
+    inStock: false, // This will be updated dynamically
     description: 'A unique Kashmiri delicacy made from traditional collard greens, slow-cooked with aromatic spices passed down through generations.',
     image: Haakh,
     ingredients: ['Haakh (Collard Greens)', 'Mustard Oil', 'Kashmiri Red Chillies', 'Fennel Seeds', 'Asafoetida', 'Rock Salt'],
