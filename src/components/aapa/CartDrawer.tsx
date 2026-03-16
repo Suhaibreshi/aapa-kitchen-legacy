@@ -111,7 +111,6 @@ const CartDrawer = () => {
     }
   }, [formData.district, formData.customState]);
 
-  const [couponApplied, setCouponApplied] = useState(false);
   const [validCoupons, setValidCoupons] = useState<Record<string, number>>({});
 
   // Load valid coupons from CSV
@@ -144,14 +143,16 @@ const CartDrawer = () => {
     const couponCode = formData.coupon.toUpperCase();
     const discountPercent = validCoupons[couponCode];
     
-    if (discountPercent && !couponApplied) {
-      setDiscount(Math.round(subtotal * (discountPercent / 100)));
-      setCouponApplied(true);
-    } else if (!discountPercent) {
+    console.log('Coupon check:', { couponCode, discountPercent, validCoupons });
+    
+    if (discountPercent) {
+      const calculatedDiscount = Math.round(subtotal * (discountPercent / 100));
+      console.log('Setting discount:', calculatedDiscount);
+      setDiscount(calculatedDiscount);
+    } else {
       setDiscount(0);
-      setCouponApplied(false);
     }
-  }, [formData.coupon, subtotal, validCoupons, couponApplied]);
+  }, [formData.coupon, subtotal, validCoupons]);
 
   const finalTotal = subtotal - discount + deliveryCharge;
 
@@ -455,15 +456,23 @@ const CartDrawer = () => {
                       />
                       <button
                         onClick={() => {
-                          setFormData(prev => ({ ...prev, coupon: 'AAPA43' }));
+                          const couponCode = 'AAPA43';
+                          setFormData(prev => ({ ...prev, coupon: couponCode }));
                           setErrors(prev => ({ ...prev, coupon: '' }));
+                          
+                          // Directly calculate discount
+                          const discountPercent = validCoupons[couponCode];
+                          if (discountPercent) {
+                            const calculatedDiscount = Math.round(subtotal * (discountPercent / 100));
+                            setDiscount(calculatedDiscount);
+                          }
                         }}
                         className="px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
                       >
                         Apply
                       </button>
                     </div>
-                    {couponApplied && (
+                    {discount > 0 && (
                       <div className="text-emerald-400 text-sm mt-2 space-y-1">
                         <div>✓ {formData.coupon.toUpperCase()} applied</div>
                         <div className="text-xs text-emerald-300">
