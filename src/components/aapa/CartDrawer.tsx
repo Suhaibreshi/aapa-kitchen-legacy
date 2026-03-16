@@ -182,37 +182,32 @@ const CartDrawer = () => {
 
     let hasErrors = false;
 
+    // Optional validation - show warnings but don't block
     if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required";
-      hasErrors = true;
+      console.log('⚠️ Warning: Full name is empty');
     }
 
     if (!formData.district) {
-      newErrors.district = "Please select a district";
-      hasErrors = true;
+      console.log('⚠️ Warning: District is empty');
     }
 
     if (formData.district === "Other" && !formData.customState.trim()) {
-      newErrors.customState = "Please enter your state/city";
-      hasErrors = true;
+      console.log('⚠️ Warning: Custom state is empty');
     }
 
     if (!formData.address.trim()) {
-      newErrors.address = "Delivery address is required";
-      hasErrors = true;
+      console.log('⚠️ Warning: Address is empty');
     }
 
     if (!formData.pincode.trim()) {
-      newErrors.pincode = "Pincode is required";
-      hasErrors = true;
+      console.log('⚠️ Warning: Pincode is empty');
     } else if (formData.pincode.length !== 6 || !/^\d{6}$/.test(formData.pincode)) {
       newErrors.pincode = "Enter a valid 6-digit pincode";
       hasErrors = true;
     }
 
     if (!formData.phone.trim()) {
-      newErrors.phone = "Phone number is required";
-      hasErrors = true;
+      console.log('⚠️ Warning: Phone is empty');
     } else if (formData.phone.length !== 10 || !/^\d{10}$/.test(formData.phone)) {
       newErrors.phone = "Enter a valid 10-digit phone number";
       hasErrors = true;
@@ -220,6 +215,7 @@ const CartDrawer = () => {
 
     setErrors(newErrors);
 
+    // Only block if phone/pincode format is invalid, otherwise proceed
     if (hasErrors) {
       return;
     }
@@ -240,15 +236,42 @@ const CartDrawer = () => {
     const displayDistrict =
       formData.district === "Other" ? formData.customState : formData.district;
 
-    const message = `🛒 *NEW ORDER - AAPA FOODS*\n\n*CUSTOMER DETAILS:*\n━━━━━━━━━━━━━━━━\n👤 Name: ${
+    const message = `🛒 *NEW ORDER - AAPA FOODS*
+
+*CUSTOMER DETAILS:*
+━━━━━━━━━━━━━━━━
+👤 Name: ${
       formData.fullName
-    }\n📍 District: ${displayDistrict}\n🏠 Address: ${
+    }
+📍 District: ${displayDistrict}
+🏠 Address: ${
       formData.address
-    }\n📮 Pincode: ${formData.pincode}\n📞 Phone: ${
+    }
+📮 Pincode: ${formData.pincode}
+📞 Phone: ${
       formData.phone
-    }\n\n*ORDER DETAILS:*\n━━━━━━━━━━━━━━━━\n${orderDetails} (${
+    }
+
+*ORDER DETAILS:*
+━━━━━━━━━━━━━━━━
+${orderDetails} (${
       JK_DISTRICTS.includes(formData.district) ? "J&K" : "Outside J&K"
-    })\n━━━━━━━━━━━━━━━━\n💰 *TOTAL: ₹${finalTotal}*\n\n✅ Customer agrees: Pre-paid orders only (No COD)\n\n_Please share payment details (UPI/QR/Bank) to complete this order._`;
+    })
+
+*PRICE BREAKDOWN:*
+━━━━━━━━━━━━━━━━
+Subtotal: ₹${subtotal}${
+      discount > 0 ? `\nDiscount (${validCoupons[formData.coupon.toUpperCase()]}%): -₹${discount}` : ''
+    }${
+      discount > 0 ? `\nAfter Discount: ₹${subtotal - discount}` : ''
+    }
+Delivery: +₹${deliveryCharge}
+━━━━━━━━━━━━━━━━
+💰 *FINAL TOTAL: ₹${finalTotal}*
+
+✅ Customer agrees: Pre-paid orders only (No COD)
+
+_Please share payment details (UPI/QR/Bank) to complete this order._`;
 
     return `https://wa.me/919541526345?text=${encodeURIComponent(message)}`;
   };
