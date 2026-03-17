@@ -535,7 +535,7 @@ _Please share payment details (UPI/QR/Bank) to complete this order._`;
             <div className="p-6 space-y-4">
               <p className="text-sm text-gray-400 mb-4">
                 Please provide your delivery details to calculate shipping
-                charges
+                charges or amount
               </p>
 
               {/* Full Name */}
