@@ -182,32 +182,38 @@ const CartDrawer = () => {
 
     let hasErrors = false;
 
-    // Optional validation - show warnings but don't block
+    // Mandatory validation - all fields required
     if (!formData.fullName.trim()) {
-      console.log('⚠️ Warning: Full name is empty');
+      newErrors.fullName = "Full name is required";
+      hasErrors = true;
     }
 
     if (!formData.district) {
-      console.log('⚠️ Warning: District is empty');
+      newErrors.district = "Please select a district";
+      hasErrors = true;
     }
 
     if (formData.district === "Other" && !formData.customState.trim()) {
-      console.log('⚠️ Warning: Custom state is empty');
+      newErrors.customState = "Please enter your state/city";
+      hasErrors = true;
     }
 
     if (!formData.address.trim()) {
-      console.log('⚠️ Warning: Address is empty');
+      newErrors.address = "Delivery address is required";
+      hasErrors = true;
     }
 
     if (!formData.pincode.trim()) {
-      console.log('⚠️ Warning: Pincode is empty');
+      newErrors.pincode = "Pincode is required";
+      hasErrors = true;
     } else if (formData.pincode.length !== 6 || !/^\d{6}$/.test(formData.pincode)) {
       newErrors.pincode = "Enter a valid 6-digit pincode";
       hasErrors = true;
     }
 
     if (!formData.phone.trim()) {
-      console.log('⚠️ Warning: Phone is empty');
+      newErrors.phone = "Phone number is required";
+      hasErrors = true;
     } else if (formData.phone.length !== 10 || !/^\d{10}$/.test(formData.phone)) {
       newErrors.phone = "Enter a valid 10-digit phone number";
       hasErrors = true;
@@ -215,7 +221,6 @@ const CartDrawer = () => {
 
     setErrors(newErrors);
 
-    // Only block if phone/pincode format is invalid, otherwise proceed
     if (hasErrors) {
       return;
     }
@@ -530,7 +535,7 @@ _Please share payment details (UPI/QR/Bank) to complete this order._`;
             <div className="p-6 space-y-4">
               <p className="text-sm text-gray-400 mb-4">
                 Please provide your delivery details to calculate shipping
-                charges
+                charges or amount
               </p>
 
               {/* Full Name */}
