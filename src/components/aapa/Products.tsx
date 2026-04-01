@@ -1,16 +1,14 @@
 import { useState, useEffect, useRef } from "react";
-import { Plus, Leaf, Clock, Heart } from "lucide-react";
-import { products, comboPrice, comboSavings } from "@/data/products";
-import { useCart } from "@/contexts/CartContext";
-import combo from "../../../public/combo.jpeg";
+import { Plus, Leaf, Clock, Heart, ChevronDown } from "lucide-react";
+import { products } from "@/data/products";
+import { useCart, ProductVariant } from "@/contexts/CartContext";
 
 const Products = () => {
   const { addToCart } = useCart();
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, ProductVariant>>({});
   const sectionRef = useRef<HTMLElement>(null);
   
-  const allInStock = products.every(p => p.inStock);
-
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -144,9 +142,38 @@ const Products = () => {
                   </div>
                 )}
 
+                {/* Variant dropdown for products with variants */}
+                {product.variants && product.variants.length > 0 && (
+                  <div className="mb-4">
+                    <label className="text-sm text-muted-foreground mb-1 block">Select Size:</label>
+                    <div className="relative">
+                      <select
+                        value={selectedVariants[product.id]?.weight || product.variants[0].weight}
+                        onChange={(e) => {
+                          const variant = product.variants?.find(v => v.weight === e.target.value);
+                          if (variant) {
+                            setSelectedVariants(prev => ({ ...prev, [product.id]: variant }));
+                          }
+                        }}
+                        className="w-full px-3 py-2 bg-muted border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary appearance-none cursor-pointer"
+                      >
+                        {product.variants.map((variant) => (
+                          <option key={variant.weight} value={variant.weight}>
+                            {variant.weight} - ₹{variant.price}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    </div>
+                  </div>
+                )}
+
                 {/* Add to cart */}
                 <button
-                  onClick={() => addToCart(product)}
+                  onClick={() => {
+                    const variant = product.variants ? (selectedVariants[product.id] || product.variants[0]) : undefined;
+                    addToCart(product, 1, variant);
+                  }}
                   disabled={!product.inStock}
                   className={`w-full flex items-center justify-center gap-2 ${product.inStock ? 'btn-primary' : 'bg-gray-600 text-gray-400 cursor-not-allowed py-3 px-6 rounded-lg'}`}
                 >
@@ -156,61 +183,6 @@ const Products = () => {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Combo offer */}
-        <div className="fade-up card-luxury relative overflow-hidden">
-          {/* Background glow */}
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5" />
-
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 min-h-[360px]">
-            {/* LEFT: Image */}
-            <div className="relative">
-              <img
-                src={combo}
-                alt="Complete Experience Combo"
-                className={`w-full h-full object-cover ${!allInStock ? 'opacity-50' : ''}`}
-              />
-              {!allInStock && (
-                <div className="absolute top-4 left-4 bg-red-600 text-white text-xs px-3 py-1.5 rounded-full font-semibold">
-                  Out of Stock
-                </div>
-              )}
-            </div>
-
-            {/* RIGHT: Content */}
-            <div className="flex flex-col justify-center p-8 lg:p-12 text-left">
-              <span className="badge-premium mb-4 inline-block bg-primary/20 w-fit">
-                Best Value
-              </span>
-
-              <h3 className="font-serif text-3xl text-foreground mb-2">
-                The Complete Experience
-              </h3>
-
-              <p className="text-muted-foreground mb-6">
-                Get both anchaars and save ₹{comboSavings}
-              </p>
-
-              <div className="flex items-center gap-4 mb-8">
-                <span className="text-muted-foreground line-through text-lg">
-                  ₹{products.reduce((sum, product) => sum + product.price, 0)}
-                </span>
-                <span className="font-serif text-4xl text-primary">
-                  ₹{comboPrice}
-                </span>
-              </div>
-
-              <button
-                onClick={handleAddCombo}
-                disabled={!allInStock}
-                className={`inline-flex items-center gap-2 w-fit ${allInStock ? 'btn-primary' : 'bg-gray-600 text-gray-400 cursor-not-allowed py-3 px-6 rounded-lg'}`}
-              >
-                <Plus className="w-4 h-4" />
-                {allInStock ? 'Add Combo to Cart' : 'Out of Stock'}
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </section>

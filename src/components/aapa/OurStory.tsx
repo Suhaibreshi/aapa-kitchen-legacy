@@ -1,32 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import StoryPopup from "./StoryPopup";
+import { useEffect, useRef } from "react";
 import Heritage from "../../../public/Heritage.jpeg";
 
 const OurStory = () => {
-  const [showPopup, setShowPopup] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Force popup to show immediately for testing
   useEffect(() => {
-    console.log('OurStory component mounted');
-    setTimeout(() => {
-      console.log('Forcing popup to show for testing');
-      setShowPopup(true);
-    }, 1000); // Show after 1 second
-  }, []);
-
-  useEffect(() => {
-    // Check if popup should be shown immediately
-    const hasSeenPopup = localStorage.getItem('special-popup-seen');
-    console.log('Our Story section visible, hasSeenPopup:', hasSeenPopup);
-    
-    // Show popup immediately if not seen before, or if testing
-    if (!hasSeenPopup) {
-      console.log('Showing popup immediately (not waiting for intersection)');
-      setShowPopup(true);
-      localStorage.setItem('special-popup-seen', 'true');
-    }
-    
     // Set up Intersection Observer for animations
     const observer = new IntersectionObserver(
       (entries) => {
@@ -57,9 +35,6 @@ const OurStory = () => {
   const handleClaimOffer = () => {
     console.log('Claim offer clicked!');
     
-    setShowPopup(false);
-    localStorage.setItem('special-popup-seen', 'true');
-    
     // Scroll to Products section (Aanchar buy section)
     const productsSection = document.getElementById('products');
     if (productsSection) {
@@ -67,24 +42,8 @@ const OurStory = () => {
     }
   };
 
-  const handleClosePopup = () => {
-    console.log('Close popup clicked!');
-    setShowPopup(false);
-    localStorage.setItem('special-popup-seen', 'true');
-  };
-
-  // Debug: Log when showPopup changes
-  useEffect(() => {
-    console.log('showPopup state changed:', showPopup);
-  }, [showPopup]);
-
   return (
     <>
-      <StoryPopup 
-        isVisible={showPopup}
-        onClose={handleClosePopup}
-        onClaimOffer={handleClaimOffer}
-      />
       <section
         id="story"
         ref={sectionRef}

@@ -1,32 +1,33 @@
 import { Product } from '@/contexts/CartContext';
 
-const Haakh = '/Haakh.jpeg';
 const Mixed = '/mixed.jpeg';
+const MasallaTikki = '/tikki.jpeg';
 
 export const products: Product[] = [
   {
     id: 'mixed-anchaar',
     name: 'Mixed Anchaar',
-    price: 350,
+    price: 200,
     weight: '400g',
-    inStock: true, // This will be updated dynamically
+    inStock: true,
     description: 'A vibrant medley of seasonal vegetables preserved in time-honored Kashmiri traditions, each bite a celebration of heritage.',
     image: Mixed,
     ingredients: ['Carrots', 'Turnips', 'Cauliflower', 'Green Chillies', 'Mustard Oil', 'Traditional Spice Blend'],
     tastingNotes: 'Bold, crunchy, and deeply spiced — a versatile companion for any meal.',
   },
   {
-    id: 'haakh-anchaar',
-    name: 'Haakh-e-Anchaar',
-    price: 350,
-    weight: '350g',
-    inStock: false,
-    description: 'A unique Kashmiri delicacy made from traditional collard greens, slow-cooked with aromatic spices passed down through generations.',
-    image: Haakh,
-    ingredients: ['Haakh (Collard Greens)', 'Mustard Oil', 'Kashmiri Red Chillies', 'Fennel Seeds', 'Asafoetida', 'Rock Salt'],
-    tastingNotes: 'Earthy, tangy with a gentle warmth that lingers — perfect with steamed rice.',
+    id: 'masalla-tikki',
+    name: 'Kashmiri Masalla Tikki',
+    price: 220,
+    weight: '200g',
+    inStock: true,
+    description: 'Traditional Kashmiri spice cakes made from roasted and ground spices, perfect for adding authentic flavor to curries and rice dishes.',
+    image: MasallaTikki,
+    ingredients: ['Roasted Cumin', 'Coriander Seeds', 'Kashmiri Red Chillies', 'Black Cardamom', 'Cinnamon', 'Cloves', 'Mace', 'Nutmeg'],
+    tastingNotes: 'Warm, aromatic, and deeply flavorful — the soul of Kashmiri cuisine in every bite.',
+    variants: [
+      { weight: '200g', price: 220 },
+      { weight: '300g', price: 320 },
+    ],
   }
 ];
-
-export const comboPrice = 380;
-export const comboSavings = (products[0].price + products[1].price) - comboPrice;

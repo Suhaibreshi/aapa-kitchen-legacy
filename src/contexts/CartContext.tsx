@@ -6,6 +6,11 @@ import React, {
   ReactNode,
 } from "react";
 
+export interface ProductVariant {
+  weight: string;
+  price: number;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -16,20 +21,22 @@ export interface Product {
   ingredients: string[];
   tastingNotes: string;
   inStock: boolean;
+  variants?: ProductVariant[];
 }
 
 export interface CartItem {
   product: Product;
   quantity: number;
+  selectedVariant?: ProductVariant;
 }
 
 interface CartContextType {
   items: CartItem[];
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-  addToCart: (product: Product, quantity?: number) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  addToCart: (product: Product, quantity?: number, selectedVariant?: ProductVariant) => void;
+  removeFromCart: (productId: string, variantWeight?: string) => void;
+  updateQuantity: (productId: string, quantity: number, variantWeight?: string) => void;
   clearCart: () => void;
   totalItems: number;
   subtotal: number;
@@ -67,33 +74,40 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [items]);
 
-  const addToCart = (product: Product, quantity = 1) => {
+  const addToCart = (product: Product, quantity = 1, selectedVariant?: ProductVariant) => {
     setItems((prev) => {
-      const existingItem = prev.find((item) => item.product.id === product.id);
+      const existingItem = prev.find((item) => 
+        item.product.id === product.id && 
+        item.selectedVariant?.weight === selectedVariant?.weight
+      );
       if (existingItem) {
         return prev.map((item) =>
-          item.product.id === product.id
+          item.product.id === product.id && item.selectedVariant?.weight === selectedVariant?.weight
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       }
-      return [...prev, { product, quantity }];
+      return [...prev, { product, quantity, selectedVariant }];
     });
     setIsOpen(true);
   };
 
-  const removeFromCart = (productId: string) => {
-    setItems((prev) => prev.filter((item) => item.product.id !== productId));
+  const removeFromCart = (productId: string, variantWeight?: string) => {
+    setItems((prev) => prev.filter((item) => 
+      !(item.product.id === productId && item.selectedVariant?.weight === variantWeight)
+    ));
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = (productId: string, quantity: number, variantWeight?: string) => {
     if (quantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(productId, variantWeight);
       return;
     }
     setItems((prev) =>
       prev.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
+        item.product.id === productId && item.selectedVariant?.weight === variantWeight
+          ? { ...item, quantity }
+          : item
       )
     );
   };
@@ -104,7 +118,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + (item.selectedVariant?.price || item.product.price) * item.quantity,
     0
   );
 

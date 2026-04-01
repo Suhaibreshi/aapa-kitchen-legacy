@@ -55,11 +55,9 @@ const CartDrawer = () => {
     address: "",
     pincode: "",
     phone: "",
-    coupon: "",
   });
 
   const [deliveryCharge, setDeliveryCharge] = useState(0);
-  const [discount, setDiscount] = useState(0);
   const [showOutOfStockModal, setShowOutOfStockModal] = useState(false);
   const [errors, setErrors] = useState({
     fullName: "",
@@ -68,19 +66,12 @@ const CartDrawer = () => {
     address: "",
     pincode: "",
     phone: "",
-    coupon: "",
   });
 
-  // Auto-apply coupon and initial step from popup claim
+  // Auto-apply initial step from popup claim
   useEffect(() => {
     if (isOpen) {
-      const autoCoupon = localStorage.getItem('auto-apply-coupon');
       const initialStep = localStorage.getItem('cart-initial-step') as 'cart' | 'delivery' | 'policy' | null;
-      
-      if (autoCoupon && !formData.coupon) {
-        setFormData(prev => ({ ...prev, coupon: autoCoupon }));
-        localStorage.removeItem('auto-apply-coupon');
-      }
       
       if (initialStep && ['cart', 'delivery', 'policy'].includes(initialStep)) {
         setStep(initialStep);
@@ -111,50 +102,7 @@ const CartDrawer = () => {
     }
   }, [formData.district, formData.customState]);
 
-  const [validCoupons, setValidCoupons] = useState<Record<string, number>>({});
-
-  // Load valid coupons from CSV
-  useEffect(() => {
-    const loadCoupons = async () => {
-      try {
-        const response = await fetch('/coupons.csv');
-        const csvText = await response.text();
-        const lines = csvText.trim().split('\n');
-        const coupons: Record<string, number> = {};
-        
-        lines.slice(1).forEach(line => {
-          const [code, discount] = line.split(',');
-          if (code && discount) {
-            coupons[code.trim()] = parseInt(discount.trim());
-          }
-        });
-        
-        setValidCoupons(coupons);
-      } catch (error) {
-        console.error('Failed to load coupons:', error);
-      }
-    };
-    
-    loadCoupons();
-  }, []);
-
-  // Calculate discount based on coupon
-  useEffect(() => {
-    const couponCode = formData.coupon.toUpperCase();
-    const discountPercent = validCoupons[couponCode];
-    
-    console.log('Coupon check:', { couponCode, discountPercent, validCoupons });
-    
-    if (discountPercent) {
-      const calculatedDiscount = Math.round(subtotal * (discountPercent / 100));
-      console.log('Setting discount:', calculatedDiscount);
-      setDiscount(calculatedDiscount);
-    } else {
-      setDiscount(0);
-    }
-  }, [formData.coupon, subtotal, validCoupons]);
-
-  const finalTotal = subtotal - discount + deliveryCharge;
+  const finalTotal = subtotal + deliveryCharge;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -177,7 +125,6 @@ const CartDrawer = () => {
       address: "",
       pincode: "",
       phone: "",
-      coupon: "",
     };
 
     let hasErrors = false;
@@ -232,9 +179,9 @@ const CartDrawer = () => {
     const orderDetails = items
       .map(
         (item) =>
-          `${item.quantity}x ${item.product.name} - ${item.product.weight} (₹${
-            item.product.price
-          } × ${item.quantity} = ₹${item.product.price * item.quantity})`
+          `${item.quantity}x ${item.product.name} - ${item.selectedVariant?.weight || item.product.weight} (₹${
+            item.selectedVariant?.price || item.product.price
+          } × ${item.quantity} = ₹${(item.selectedVariant?.price || item.product.price) * item.quantity})`
       )
       .join("\n");
 
@@ -265,11 +212,7 @@ ${orderDetails} (${
 
 *PRICE BREAKDOWN:*
 ━━━━━━━━━━━━━━━━
-Subtotal: ₹${subtotal}${
-      discount > 0 ? `\nDiscount (${validCoupons[formData.coupon.toUpperCase()]}%): -₹${discount}` : ''
-    }${
-      discount > 0 ? `\nAfter Discount: ₹${subtotal - discount}` : ''
-    }
+Subtotal: ₹${subtotal}
 Delivery: +₹${deliveryCharge}
 ━━━━━━━━━━━━━━━━
 💰 *FINAL TOTAL: ₹${finalTotal}*
@@ -308,7 +251,6 @@ _Please share payment details (UPI/QR/Bank) to complete this order._`;
       address: "",
       pincode: "",
       phone: "",
-      coupon: "",
     });
     setErrors({
       fullName: "",
@@ -317,7 +259,6 @@ _Please share payment details (UPI/QR/Bank) to complete this order._`;
       address: "",
       pincode: "",
       phone: "",
-      coupon: "",
     });
     setStep("cart");
     setIsOpen(false);
@@ -405,11 +346,11 @@ _Please share payment details (UPI/QR/Bank) to complete this order._`;
                               {item.product.name}
                             </h4>
                             <p className="text-sm text-gray-400 mt-1">
-                              {item.product.weight}
+                              {item.selectedVariant?.weight || item.product.weight}
                             </p>
                           </div>
                           <button
-                            onClick={() => removeFromCart(item.product.id)}
+                            onClick={() => removeFromCart(item.product.id, item.selectedVariant?.weight)}
                             className="text-gray-500 hover:text-red-400 transition-colors p-1"
                           >
                             <X className="w-5 h-5" />
@@ -421,7 +362,8 @@ _Please share payment details (UPI/QR/Bank) to complete this order._`;
                               onClick={() =>
                                 updateQuantity(
                                   item.product.id,
-                                  item.quantity - 1
+                                  item.quantity - 1,
+                                  item.selectedVariant?.weight
                                 )
                               }
                               className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-700 text-white"
@@ -435,7 +377,8 @@ _Please share payment details (UPI/QR/Bank) to complete this order._`;
                               onClick={() =>
                                 updateQuantity(
                                   item.product.id,
-                                  item.quantity + 1
+                                  item.quantity + 1,
+                                  item.selectedVariant?.weight
                                 )
                               }
                               className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-700 text-white"
@@ -450,7 +393,7 @@ _Please share payment details (UPI/QR/Bank) to complete this order._`;
                                 : "text-yellow-500"
                             }`}
                           >
-                            ₹{item.product.price * item.quantity}
+                            ₹{(item.selectedVariant?.price || item.product.price) * item.quantity}
                           </p>
                         </div>
                       </div>
@@ -465,49 +408,6 @@ _Please share payment details (UPI/QR/Bank) to complete this order._`;
                         ₹{subtotal}
                       </span>
                     </div>
-                  </div>
-
-                  {/* Coupon Code Section */}
-                  <div className="bg-[#232938] rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <input
-                        type="text"
-                        name="coupon"
-                        placeholder="Enter coupon code"
-                        value={formData.coupon}
-                        onChange={handleInputChange}
-                        className={`w-full px-4 py-3 bg-[#1a1f2e] border ${
-                          errors.coupon
-                            ? "border-red-500 focus:ring-red-500"
-                            : "border-gray-700 focus:ring-yellow-500"
-                        } text-white rounded-lg focus:outline-none focus:ring-2 placeholder-gray-500`}
-                      />
-                      <button
-                        onClick={() => {
-                          const couponCode = 'AAPA43';
-                          setFormData(prev => ({ ...prev, coupon: couponCode }));
-                          setErrors(prev => ({ ...prev, coupon: '' }));
-                          
-                          // Directly calculate discount
-                          const discountPercent = validCoupons[couponCode];
-                          if (discountPercent) {
-                            const calculatedDiscount = Math.round(subtotal * (discountPercent / 100));
-                            setDiscount(calculatedDiscount);
-                          }
-                        }}
-                        className="px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
-                      >
-                        Apply
-                      </button>
-                    </div>
-                    {discount > 0 && (
-                      <div className="text-emerald-400 text-sm mt-2 space-y-1">
-                        <div>✓ {formData.coupon.toUpperCase()} applied</div>
-                        <div className="text-xs text-emerald-300">
-                          {validCoupons[formData.coupon.toUpperCase()]}% discount applied
-                        </div>
-                      </div>
-                    )}
                   </div>
 
                   <p className="text-sm text-gray-500 text-center mb-6">
@@ -556,29 +456,6 @@ _Please share payment details (UPI/QR/Bank) to complete this order._`;
                   <p className="text-red-400 text-sm mt-1 flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />
                     {errors.fullName}
-                  </p>
-                )}
-              </div>
-
-              {/* Coupon Code */}
-              <div className="flex gap-2 mb-4">
-                <input
-                  type="text"
-                  name="coupon"
-                  placeholder="Coupon code *"
-                  value={formData.coupon}
-                  onChange={handleInputChange}
-                  className={`w-full px-4 py-3 bg-[#232938] border ${
-                    errors.coupon
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-700 focus:ring-yellow-500"
-                  } text-white rounded-lg focus:outline-none focus:ring-2 placeholder-gray-500`}
-                  required
-                />
-                {errors.coupon && (
-                  <p className="text-red-400 text-sm mt-1 flex items-center gap-1">
-                    <AlertCircle className="w-3 h-3" />
-                    {errors.coupon}
                   </p>
                 )}
               </div>
@@ -831,7 +708,7 @@ _Please share payment details (UPI/QR/Bank) to complete this order._`;
                 <div className="space-y-1 text-sm">
                   {items.map((item) => (
                     <div
-                      key={item.product.id}
+                      key={`${item.product.id}-${item.selectedVariant?.weight || 'default'}`}
                       className={`flex justify-between ${
                         !item.product.inStock
                           ? "text-gray-500 line-through"
@@ -839,13 +716,13 @@ _Please share payment details (UPI/QR/Bank) to complete this order._`;
                       }`}
                     >
                       <span>
-                        {item.quantity}x {item.product.name}{" "}
+                        {item.quantity}x {item.product.name} ({item.selectedVariant?.weight || item.product.weight}){" "}
                         {!item.product.inStock && "(Out of Stock)"}
                       </span>
                       <span
                         className={!item.product.inStock ? "" : "text-white"}
                       >
-                        ₹{item.product.price * item.quantity}
+                        ₹{(item.selectedVariant?.price || item.product.price) * item.quantity}
                       </span>
                     </div>
                   ))}
@@ -855,10 +732,6 @@ _Please share payment details (UPI/QR/Bank) to complete this order._`;
                   <div className="flex justify-between text-gray-400">
                     <span>Subtotal:</span>
                     <span className="text-white">₹{subtotal}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-400">
-                    <span>Discount:</span>
-                    <span className="text-green-400">-₹{discount}</span>
                   </div>
                   <div className="flex justify-between text-gray-400">
                     <span>
@@ -943,15 +816,15 @@ _Please share payment details (UPI/QR/Bank) to complete this order._`;
                 .filter((item) => !item.product.inStock)
                 .map((item) => (
                   <div
-                    key={item.product.id}
+                    key={`${item.product.id}-${item.selectedVariant?.weight || 'default'}`}
                     className="flex items-center justify-between bg-[#232938] p-3 rounded-lg"
                   >
                     <span className="text-gray-300 text-sm">
-                      {item.product.name}
+                      {item.product.name} {item.selectedVariant?.weight && `(${item.selectedVariant.weight})`}
                     </span>
                     <button
                       onClick={() => {
-                        removeFromCart(item.product.id);
+                        removeFromCart(item.product.id, item.selectedVariant?.weight);
                         if (!items.some((i) => !i.product.inStock)) {
                           setShowOutOfStockModal(false);
                         }
